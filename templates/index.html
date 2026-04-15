@@ -60,6 +60,13 @@
                 <div class="card quantum-card">
                     <h2>Qiskit Real-Time Key Generation</h2>
                     <p class="subtext">Utilizing Hadamard gates to achieve pure superposition prior to measurement.</p>
+                    <div class="qiskit-hardware-sim">
+                        <div id="bloch-sphere-container"></div>
+                        <div class="bloch-labels">
+                            <span class="axis-label z">|0⟩</span>
+                            <span class="axis-label z-minus">|1⟩</span>
+                        </div>
+                    </div>
                     <div class="q-actions">
                         <label>Key Length: <input type="number" id="key-length" value="128" min="16" max="256"> bits</label>
                         <button id="gen-key-btn" class="primary-btn">Generate Quantum Key</button>
@@ -132,10 +139,19 @@
                         
                         <div class="attack-explanation" id="attack-explanation"></div>
                     </div>
+                    
+                    <div class="card terminal-card">
+                        <div class="terminal-header">Live System Logs</div>
+                        <div class="terminal-body" id="system-terminal">
+                            <div class="log-entry">> Initializing Quantum Kernel...</div>
+                            <div class="log-entry">> CPU: Waiting for Qubits calibration...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
