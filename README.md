@@ -1,5 +1,7 @@
 # Quantum Secure Communication System
 
+**Developed by: Medicharla Shanmukheswar**
+
 A high-impact hackathon project demonstrating quantum-secure communication. We leverage Qiskit to create true randomness via quantum superposition collapses, providing an unbreakable XOR key stream. The project visualizes real-time encryption and simulates an AI-driven attack, comparing Classical PRNG predictability vs. Quantum TRNG unpredictability.
 
 ## Core Features
@@ -37,4 +39,6 @@ python app.py
 Navigate to `http://127.0.0.1:5000` in your web browser.
 
 ---
-*Created for the Quantum Hackathon.*
+
+*Developed by Medicharla Shanmukheswar for the Quantum Hackathon.*
+
