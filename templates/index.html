@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Secure Communication System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        
+        <header>
+            <h1><span class="glow">Quantum</span> Secure Comm System</h1>
+            
+            <div class="problem-solution-box">
+                <div class="ps-item problem">
+                    <span class="ps-label">Problem:</span>
+                    <p>Classical cryptography is vulnerable to quantum attacks and lacks true randomness</p>
+                </div>
+                <div class="ps-item solution">
+                    <span class="ps-label">Solution:</span>
+                    <p>This system uses quantum-generated randomness to enable more secure communication</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard">
+            <!-- Left Column: Chats -->
+            <div class="col chat-col">
+                <div class="card chat-card">
+                    <div class="card-header">
+                        <h2>Sender Interface</h2>
+                        <span class="status-indicator live">Live</span>
+                    </div>
+                    <div class="chat-logs" id="sender-logs"></div>
+                    
+                    <div class="ai-status">
+                        <span class="label">AI Content Analysis:</span>
+                        <div id="ai-result" class="ai-badge none">Awaiting message...</div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input type="text" id="message-input" placeholder="Type a message to encrypt...">
+                        <button id="send-btn">Send Securely</button>
+                    </div>
+                </div>
+                
+                <div class="card chat-card">
+                    <div class="card-header">
+                        <h2>Receiver Interface</h2>
+                        <span class="status-indicator safe">Secure</span>
+                    </div>
+                    <div class="chat-logs" id="receiver-logs"></div>
+                </div>
+            </div>
+
+            <!-- Middle Column: Quantum Core & Security -->
+            <div class="col process-col">
+                <div class="card quantum-card">
+                    <h2>Qiskit Real-Time Key Generation</h2>
+                    <p class="subtext">Utilizing Hadamard gates to achieve pure superposition prior to measurement.</p>
+                    <div class="q-actions">
+                        <label>Key Length: <input type="number" id="key-length" value="128" min="16" max="256"> bits</label>
+                        <button id="gen-key-btn" class="primary-btn">Generate Quantum Key</button>
+                    </div>
+                    <div class="q-display">
+                        <div class="bits" id="active-key">No Q-Key Loaded</div>
+                        <pre id="circuit-desc" class="code-font"></pre>
+                    </div>
+                </div>
+
+                <div class="card security-card">
+                    <h2>Live XOR Encryption Sequence</h2>
+                    <div class="steps-display">
+                        <div class="step">
+                            <span class="label">1. Original Plaintext:</span>
+                            <span class="value" id="disp-plain">-</span>
+                        </div>
+                        <div class="step">
+                            <span class="label">2. Quantum Key Stream:</span>
+                            <span class="value code-font" id="disp-key">-</span>
+                        </div>
+                        <div class="step">
+                            <span class="label">3. Transmitted CipherStream:</span>
+                            <span class="value code-font highlight" id="disp-cipher">-</span>
+                        </div>
+                        <div class="step">
+                            <span class="label">4. Unlocked Decrypted Text:</span>
+                            <span class="value success-text" id="disp-decrypted">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Attack Sim -->
+            <div class="col attack-col">
+                <div class="card attack-card">
+                    <h2>AI Attack Simulation</h2>
+                    <p class="subtext">Comparing vulnerability to machine learning cryptanalysis models.</p>
+                    
+                    <button id="sim-attack-btn" class="danger-btn">Run ML Threat Simulation</button>
+                    
+                    <div id="attack-results" class="attack-results">
+                        <div class="attack-section">
+                            <h4 class="attack-subtitle">Classical PRNG Vulnerability</h4>
+                            <div class="side-by-side-bits">
+                                <span class="bit-tag classical-tag">PRNG String:</span>
+                                <span id="classical-bits-disp" class="code-font bit-stream hidden-stream">-</span>
+                            </div>
+                            <div class="bar-chart">
+                                <div class="bar-track">
+                                    <div class="bar-fill classical" id="bar-classical" style="width: 0%;"></div>
+                                    <span id="pct-classical" class="pct-label">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="attack-section mt-20">
+                            <h4 class="attack-subtitle">Quantum TRNG Vulnerability</h4>
+                            <div class="side-by-side-bits">
+                                <span class="bit-tag quantum-tag">TRNG String:</span>
+                                <span id="quantum-bits-disp" class="code-font bit-stream hidden-stream">-</span>
+                            </div>
+                            <div class="bar-chart">
+                                <div class="bar-track">
+                                    <div class="bar-fill quantum" id="bar-quantum" style="width: 0%;"></div>
+                                    <span id="pct-quantum" class="pct-label">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="attack-explanation" id="attack-explanation"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
