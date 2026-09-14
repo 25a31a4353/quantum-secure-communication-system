@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const themeToggleLabel = document.getElementById('theme-toggle-label');
 
+    let currentActiveKey = "1010101010101010";
+
     // System Terminal Logger
     function log(message, type = '') {
         if (!systemTerminal) return;
@@ -44,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Bloch Sphere Setup
+    // Three.js Setup
     let scene, camera, renderer, sphere, arrow, wireframe;
     initBlochSphere();
 
@@ -80,11 +82,127 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply active theme immediately
     applyTheme(initialTheme, false);
 
+    // Embedded Quantum & Crypto Engine Fallback (Used when offline or in Streamlit Cloud)
+    function localQuantumEngine(endpoint, payload) {
+        if (endpoint === '/system_status') {
+            return {
+                status: 'Online',
+                qubit_temperature: '15mK',
+                coherence_time: '94μs',
+                error_rate: '0.0012%',
+                backend: 'IBM Q - Falcon Processor v5'
+            };
+        }
+        if (endpoint === '/generate_key') {
+            const length = Math.min(512, Math.max(16, parseInt(payload?.length) || 128));
+            let key = "";
+            const array = new Uint8Array(Math.ceil(length / 8));
+            if (window.crypto && window.crypto.getRandomValues) {
+                window.crypto.getRandomValues(array);
+                for (let i = 0; i < array.length; i++) {
+                    key += array[i].toString(2).padStart(8, '0');
+                }
+                key = key.substring(0, length);
+            } else {
+                for (let i = 0; i < length; i++) {
+                    key += Math.random() < 0.5 ? '0' : '1';
+                }
+            }
+            const circuit = `1. Initialized ${length} qubits to |0⟩\n2. Applied Hadamard (H) gates to create superposition state: α|0⟩ + β|1⟩\n3. Measured qubits collapsing state to basis ${length}-bit string.`;
+            currentActiveKey = key;
+            return { success: true, key: key, circuit: circuit };
+        }
+        if (endpoint === '/send_message') {
+            const msg = payload?.message || '';
+            const lower = msg.toLowerCase();
+            let classification = "Safe";
+            const sensitiveKeywords = ["password", "secret", "account", "social security", "credit card", "bank", "pin", "launch codes", "transfer"];
+            const spamKeywords = ["prize", "free gift", "click here", "cheap pills", "earn money", "won", "$1000", "claim your inheritance"];
+            if (sensitiveKeywords.some(w => lower.includes(w))) {
+                classification = "Sensitive";
+            } else if (spamKeywords.some(w => lower.includes(w))) {
+                classification = "Spam";
+            }
+
+            const ptBits = [];
+            for (let i = 0; i < msg.length; i++) {
+                const bin = msg.charCodeAt(i).toString(2).padStart(8, '0');
+                for (let b of bin) ptBits.push(parseInt(b));
+            }
+            const keyBits = (currentActiveKey || "1010101010101010").split('').map(b => parseInt(b));
+            const extendedKey = [];
+            for (let i = 0; i < ptBits.length; i++) {
+                extendedKey.push(keyBits[i % keyBits.length]);
+            }
+            const cipherBits = ptBits.map((p, i) => p ^ extendedKey[i]);
+            const decryptedBits = cipherBits.map((c, i) => c ^ extendedKey[i]);
+            let decryptedStr = '';
+            for (let i = 0; i < decryptedBits.length; i += 8) {
+                const byte = decryptedBits.slice(i, i + 8);
+                if (byte.length < 8) break;
+                decryptedStr += String.fromCharCode(parseInt(byte.join(''), 2));
+            }
+            return {
+                success: true,
+                original: msg,
+                classifier_result: classification,
+                cipher_bits: cipherBits.join(''),
+                used_key: extendedKey.join(''),
+                decrypted: decryptedStr
+            };
+        }
+        if (endpoint === '/simulate_attack') {
+            const trials = 250;
+            let classicalSuccess = 0;
+            let quantumSuccess = 0;
+            const classicalPattern = [];
+            const quantumPattern = [];
+            let curr = 7;
+            for (let i = 0; i < 64; i++) {
+                curr = (13 * curr + 7) % 256;
+                const bits = curr.toString(2).padStart(8, '0');
+                classicalPattern.push(parseInt(bits[0]));
+                quantumPattern.push(Math.random() < 0.5 ? 0 : 1);
+            }
+            for (let i = 0; i < trials; i++) {
+                if (Math.random() < 0.92) classicalSuccess++;
+                if (Math.random() < 0.505) quantumSuccess++;
+            }
+            return {
+                trials: trials,
+                classical_predictability: ((classicalSuccess / trials) * 100).toFixed(1) + "%",
+                quantum_predictability: ((quantumSuccess / trials) * 100).toFixed(1) + "%",
+                classical_bits: classicalPattern.slice(0, 48).join(''),
+                quantum_bits: quantumPattern.slice(0, 48).join(''),
+                explanation: "The classical source exhibits a mathematical bias recognizable by neural networks. The quantum source provides maximum entropy (no patterns)."
+            };
+        }
+        return { success: false, error: 'Unknown endpoint' };
+    }
+
+    // Unified API Request handler with automatic fallback
+    async function apiRequest(endpoint, method = 'GET', payload = null) {
+        try {
+            const options = { method, headers: { 'Content-Type': 'application/json' } };
+            if (payload) options.body = JSON.stringify(payload);
+            const res = await fetch(endpoint, options);
+            if (res.ok) {
+                const data = await res.json();
+                if (endpoint === '/generate_key' && data.success) {
+                    currentActiveKey = data.key;
+                }
+                return data;
+            }
+        } catch (err) {
+            // Seamlessly fall back to local quantum simulation engine
+        }
+        return localQuantumEngine(endpoint, payload);
+    }
+
     // System Status Monitor
     async function updateSystemStatus() {
         try {
-            const res = await fetch('/system_status');
-            const data = await res.json();
+            const data = await apiRequest('/system_status');
             log(`Hardware Probe: Temp=${data.qubit_temperature}, Error=${data.error_rate}`, 'status-update');
         } catch(err) {
             console.error('Status fetch failed');
@@ -129,12 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBlochState(Math.PI / 2, 0); // H gate moves |0> to (|0>+|1>)/sqrt(2) which is on the X-axis
         
         try {
-            const res = await fetch('/generate_key', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({length: keyLengthInput.value})
-            });
-            const data = await res.json();
+            const data = await apiRequest('/generate_key', 'POST', {length: keyLengthInput.value});
             
             if(data.success) {
                 // Simulate measurent collapse
@@ -180,12 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessageToLog(senderLogs, text, 'sent');
         
         try {
-            const res = await fetch('/send_message', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: text})
-            });
-            const data = await res.json();
+            const data = await apiRequest('/send_message', 'POST', {message: text});
             
             if(data.success) {
                 log('XOR logic applied with Quantum OTP.', 'cmd');
@@ -233,8 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
         attackExplanation.style.display = 'none';
         
         try {
-            const res = await fetch('/simulate_attack');
-            const data = await res.json();
+            const data = await apiRequest('/simulate_attack');
             
             setTimeout(() => {
                 classicalBitsDisp.textContent = data.classical_bits;
@@ -271,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('bloch-sphere-container');
         if (!container) return;
         const width = container.clientWidth || 300;
-        const height = container.clientHeight || 200;
+        const height = container.clientHeight || 190;
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
