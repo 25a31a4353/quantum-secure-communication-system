@@ -8,29 +8,53 @@ from ai.classifier import get_message_classification
 
 st.set_page_config(page_title="Quantum Secure Communication System", layout="wide")
 
+if "theme" not in st.session_state:
+    st.session_state.theme = "Dark"
+
+with st.sidebar:
+    st.markdown("### 🌓 Display Theme")
+    theme_choice = st.radio(
+        "Theme Mode",
+        options=["Dark Mode 🌙", "Light Mode ☀️"],
+        index=0 if st.session_state.theme == "Dark" else 1,
+        help="Toggle between Dark and Light mode based on preference",
+    )
+    st.session_state.theme = "Dark" if "Dark" in theme_choice else "Light"
+
+is_light = st.session_state.theme == "Light"
+bg_main = "#f3f6fb" if is_light else "#020205"
+card_bg = "rgba(255, 255, 255, 0.92)" if is_light else "rgba(13, 13, 22, 0.82)"
+primary_color = "#008fa0" if is_light else "#00f2ff"
+quantum_color = "#7928ca" if is_light else "#9d00ff"
+text_color = "#0f172a" if is_light else "#f1f5f9"
+muted_color = "#475569" if is_light else "#94a3b8"
+border_color = "rgba(15, 23, 42, 0.1)" if is_light else "rgba(255,255,255,0.08)"
+box_bg = "#f8fafc" if is_light else "rgba(0,0,0,0.55)"
+
 st.markdown(
-    """
+    f"""
     <style>
-        :root {
-            --bg-main: #020205;
-            --card-bg: rgba(13, 13, 22, 0.82);
-            --primary: #00f2ff;
-            --quantum: #9d00ff;
-            --text: #f1f5f9;
-            --muted: #94a3b8;
+        :root {{
+            --bg-main: {bg_main};
+            --card-bg: {card_bg};
+            --primary: {primary_color};
+            --quantum: {quantum_color};
+            --text: {text_color};
+            --muted: {muted_color};
             --danger: #ff2e63;
             --safe: #08f7af;
             --warning: #ffb800;
-            --border: rgba(255,255,255,0.08);
-        }
+            --border: {border_color};
+            --box-bg: {box_bg};
+        }}
 
-        html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-            background: var(--bg-main);
-            color: var(--text);
+        html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {{
+            background: var(--bg-main) !important;
+            color: var(--text) !important;
             background-image:
                 radial-gradient(circle at 10% 20%, rgba(178, 0, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.08) 0%, transparent 40%);
-        }
+                radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.08) 0%, transparent 40%) !important;
+        }}
 
         .main .block-container {
             max-width: 1500px;
@@ -44,7 +68,7 @@ st.markdown(
             letter-spacing: -1px;
             margin-bottom: 18px;
             text-align: center;
-            color: white;
+            color: var(--text);
         }
 
         .glow {
@@ -147,7 +171,7 @@ st.markdown(
         }
 
         .neo-box {
-            background: rgba(0,0,0,0.55);
+            background: var(--box-bg);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;

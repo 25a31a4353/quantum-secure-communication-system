@@ -11,7 +11,16 @@
     <div class="app-container">
         
         <header>
-            <h1><span class="glow">Quantum</span> Secure Comm System</h1>
+            <div class="header-top">
+                <h1><span class="glow">Quantum</span> Secure Comm System</h1>
+                <div class="theme-switch-wrapper">
+                    <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Light/Dark Theme" title="Toggle between Dark and Light mode">
+                        <span class="theme-icon moon-icon">🌙</span>
+                        <span class="theme-icon sun-icon">☀️</span>
+                        <span id="theme-toggle-label" class="theme-label">Dark Mode</span>
+                    </button>
+                </div>
+            </div>
             
             <div class="problem-solution-box">
                 <div class="ps-item problem">
@@ -28,7 +37,7 @@
         <div class="dashboard">
             <!-- Left Column: Chats -->
             <div class="col chat-col">
-                <div class="card chat-card">
+                <div class="card chat-card sender-card">
                     <div class="card-header">
                         <h2>Sender Interface</h2>
                         <span class="status-indicator live">Live</span>
@@ -46,7 +55,7 @@
                     </div>
                 </div>
                 
-                <div class="card chat-card">
+                <div class="card chat-card receiver-card">
                     <div class="card-header">
                         <h2>Receiver Interface</h2>
                         <span class="status-indicator safe">Secure</span>
@@ -139,13 +148,13 @@
                         
                         <div class="attack-explanation" id="attack-explanation"></div>
                     </div>
-                    
-                    <div class="card terminal-card">
-                        <div class="terminal-header">Live System Logs</div>
-                        <div class="terminal-body" id="system-terminal">
-                            <div class="log-entry">> Initializing Quantum Kernel...</div>
-                            <div class="log-entry">> CPU: Waiting for Qubits calibration...</div>
-                        </div>
+                </div>
+                
+                <div class="card terminal-card">
+                    <div class="terminal-header">Live System Logs</div>
+                    <div class="terminal-body" id="system-terminal">
+                        <div class="log-entry">> Initializing Quantum Kernel...</div>
+                        <div class="log-entry">> CPU: Waiting for Qubits calibration...</div>
                     </div>
                 </div>
             </div>

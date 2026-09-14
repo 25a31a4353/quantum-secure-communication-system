@@ -26,6 +26,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const quantumBitsDisp = document.getElementById('quantum-bits-disp');
     const attackExplanation = document.getElementById('attack-explanation');
     const systemTerminal = document.getElementById('system-terminal');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeToggleLabel = document.getElementById('theme-toggle-label');
+
+    // System Terminal Logger
+    function log(message, type = '') {
+        if (!systemTerminal) return;
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.textContent = `> [${new Date().toLocaleTimeString()}] ${message}`;
+        systemTerminal.appendChild(entry);
+        systemTerminal.scrollTop = systemTerminal.scrollHeight;
+        
+        // Keep log from getting too long
+        if (systemTerminal.children.length > 50) {
+            systemTerminal.removeChild(systemTerminal.firstChild);
+        }
+    }
+
+    // Bloch Sphere Setup
+    let scene, camera, renderer, sphere, arrow, wireframe;
+    initBlochSphere();
+
+    // Theme Management (Light / Dark Mode)
+    const savedTheme = localStorage.getItem('quantum_theme');
+    const systemPrefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initialTheme = savedTheme || (systemPrefersLight ? 'light' : 'dark');
+
+    function applyTheme(theme, logChange = false) {
+        const isLight = theme === 'light';
+        document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+        
+        if (themeToggleLabel) {
+            themeToggleLabel.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+        }
+        
+        localStorage.setItem('quantum_theme', isLight ? 'light' : 'dark');
+        updateBlochSphereTheme(isLight ? 'light' : 'dark');
+        
+        if (logChange) {
+            log(`Theme shifted to ${isLight ? 'LIGHT' : 'DARK'} mode`, 'cmd');
+        }
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const nextTheme = current === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme, true);
+        });
+    }
+
+    // Apply active theme immediately
+    applyTheme(initialTheme, false);
 
     // System Status Monitor
     async function updateSystemStatus() {
@@ -40,24 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update status every 30 seconds
     setInterval(updateSystemStatus, 30000);
-
-    // Bloch Sphere Setup
-    let scene, camera, renderer, sphere, arrow, wireframe;
-    initBlochSphere();
-
-    // System Terminal Logger
-    function log(message, type = '') {
-        const entry = document.createElement('div');
-        entry.className = `log-entry ${type}`;
-        entry.textContent = `> [${new Date().toLocaleTimeString()}] ${message}`;
-        systemTerminal.appendChild(entry);
-        systemTerminal.scrollTop = systemTerminal.scrollHeight;
-        
-        // Keep log from getting too long
-        if (systemTerminal.children.length > 50) {
-            systemTerminal.removeChild(systemTerminal.firstChild);
-        }
-    }
 
     // Auto-generate key on load
     setTimeout(() => {
@@ -234,8 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Three.js Functions
     function initBlochSphere() {
         const container = document.getElementById('bloch-sphere-container');
-        const width = container.clientWidth;
-        const height = container.clientHeight;
+        if (!container) return;
+        const width = container.clientWidth || 300;
+        const height = container.clientHeight || 200;
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
@@ -296,14 +332,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateBlochSphereTheme(theme) {
+        if (!sphere || !wireframe || !arrow) return;
+        if (theme === 'light') {
+            sphere.material.color.setHex(0x7928ca);
+            sphere.material.opacity = 0.22;
+            wireframe.material.color.setHex(0x7928ca);
+            wireframe.material.opacity = 0.16;
+            arrow.setColor(0x008fa0);
+        } else {
+            sphere.material.color.setHex(0x9d00ff);
+            sphere.material.opacity = 0.15;
+            wireframe.material.color.setHex(0x9d00ff);
+            wireframe.material.opacity = 0.1;
+            arrow.setColor(0x00f2ff);
+        }
+    }
+
     function animate() {
         requestAnimationFrame(animate);
-        sphere.rotation.y += 0.005;
-        wireframe.rotation.y += 0.005;
-        renderer.render(scene, camera);
+        if (sphere) sphere.rotation.y += 0.005;
+        if (wireframe) wireframe.rotation.y += 0.005;
+        if (renderer && scene && camera) renderer.render(scene, camera);
     }
 
     function updateBlochState(theta, phi) {
+        if (!arrow || !sphere) return;
         const x = Math.sin(theta) * Math.cos(phi);
         const z = Math.cos(theta);
         const y = Math.sin(theta) * Math.sin(phi);
@@ -312,9 +366,10 @@ document.addEventListener('DOMContentLoaded', () => {
         arrow.setDirection(newDir);
         
         // Glow effect on update
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
         sphere.material.opacity = 0.5;
         setTimeout(() => {
-            sphere.material.opacity = 0.15;
+            sphere.material.opacity = isLight ? 0.22 : 0.15;
         }, 300);
     }
 });
