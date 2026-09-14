@@ -40,5 +40,35 @@ Navigate to `http://127.0.0.1:5000` in your web browser.
 
 ---
 
+## Streamlit Deployment
+
+You can run this project as a Streamlit app (no Flask server required).
+
+1. Install requirements (see above).
+2. Start Streamlit:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The Streamlit UI exposes the same core features: quantum key generation, XOR encryption, message classification, and the ML attack simulation. For lightweight demos you can skip `qiskit` (the project falls back to a simulated TRNG when Qiskit/Aer are unavailable).
+
+### CI / Auto-deploy with GitHub Actions
+
+This repository includes a GitHub Actions workflow that triggers a Streamlit Cloud redeploy on pushes to `main`:
+
+- Workflow: [.github/workflows/deploy-streamlit.yml](.github/workflows/deploy-streamlit.yml)
+
+Before the workflow can trigger a deploy, add these repository secrets in GitHub (Settings → Secrets → Actions):
+
+- `STREAMLIT_CLOUD_TOKEN` — a deploy token from Streamlit Cloud (Teams/Enterprise) or an API token from your account.
+- `STREAMLIT_APP_ID` — the Streamlit app ID to redeploy (visible in Streamlit Cloud app settings).
+
+On push to `main` the workflow will call the Streamlit deploy API to request a new deployment for the specified app and branch.
+
+If you don't have Streamlit Cloud tokens, you can still use the app by running locally with `streamlit run streamlit_app.py`.
+
+---
+
 *Developed by Medicharla Shanmukheswar for the Quantum Hackathon.*
 

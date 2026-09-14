@@ -3,3 +3,4 @@ qiskit
 qiskit-aer
 scikit-learn
 numpy
+streamlit
