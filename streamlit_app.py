@@ -55,7 +55,14 @@ st.markdown(
                 radial-gradient(circle at 10% 20%, rgba(178, 0, 255, 0.08) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.08) 0%, transparent 40%) !important;
         }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
+st.markdown(
+    """
+    <style>
         .main .block-container {
             max-width: 1500px;
             padding-top: 24px;
@@ -112,7 +119,7 @@ st.markdown(
         .solution-card .problem-label { color: var(--safe); }
 
         .problem-card p, .solution-card p {
-            color: #dfe7f4;
+            color: var(--muted);
             margin: 0;
             font-size: 1rem;
             line-height: 1.4;
@@ -120,26 +127,27 @@ st.markdown(
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1.1fr 1.35fr 1.1fr;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.35fr) minmax(0, 1.1fr);
             gap: 24px;
             align-items: start;
         }
 
         .panel {
-            background: rgba(13,13,22,0.8);
+            background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 22px;
-            box-shadow: 0 15px 35px -15px rgba(0,0,0,0.8);
+            box-shadow: 0 15px 35px -15px rgba(0,0,0,0.5);
             backdrop-filter: blur(15px);
             min-height: 200px;
+            color: var(--text);
         }
 
         .panel h2 {
             margin: 0;
             font-size: 1.25rem;
             font-weight: 600;
-            color: white;
+            color: var(--text);
             border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
         }
@@ -234,16 +242,16 @@ st.markdown(
 
         .stTextInput > div > div > input,
         .stNumberInput > div > div > input {
-            background: rgba(0,0,0,0.5);
-            color: white;
-            border: 1px solid var(--border);
+            background: var(--box-bg) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border) !important;
             border-radius: 8px;
             padding: 12px 14px;
         }
 
         .stTextInput > div > div > input:focus,
         .stNumberInput > div > div > input:focus {
-            border-color: var(--primary);
+            border-color: var(--primary) !important;
             box-shadow: 0 0 0 1px rgba(0,229,255,0.2);
         }
 
@@ -333,7 +341,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-left_col, center_col, right_col = st.columns([1.1, 1.45, 1.15])
+left_col, center_col, right_col = st.columns([1.1, 1.35, 1.1])
 
 with left_col:
     st.markdown(
